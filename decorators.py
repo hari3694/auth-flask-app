@@ -28,8 +28,9 @@ def login_required(func):
             expiration_time = datetime.datetime.utcfromtimestamp(payload['exp'])
             if current_time > expiration_time:
                 raise jwt.ExpiredSignatureError('Token has expired')
+            email = payload['customer_email']
 
-            return func(*args, **kwargs)
+            return func(email, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
         except jwt.InvalidTokenError as e:
