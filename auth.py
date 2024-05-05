@@ -85,3 +85,25 @@ def reset_password():
     except Exception as E:
         logger.exception(str(E))
         return 500
+
+
+@auth_blueprint.route('/api/v1/change-language/', methods=['PUT'])
+@login_required
+def change_language(email):
+    # Get the new language from the request
+    new_language = request.json.get('language')
+    if new_language:
+        # Check if the language is valid
+        if new_language not in ['de', 'en']:
+            return jsonify({'message': 'Invalid language'}), 400
+
+        # Update the user's language in the database
+        result = mongo.update_one(customer_collection, {'email': email}, {'language': new_language})
+
+        # Check if the update was successful
+        if result:
+            return jsonify({'message': 'Language updated successfully'}), 200
+        else:
+            return jsonify({'message': 'Invaild request'}), 400
+    else:
+        return jsonify({'message': 'language to update missing'}), 400
