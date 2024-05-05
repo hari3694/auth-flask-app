@@ -54,7 +54,8 @@ This guide outlines the steps required to run the Flask application that uses Mo
    AUTH_DB= Database containing the customer data
    AUTH_COLLECTION = Collection containing the customer data
    SECRET_KEY=  Create a secret key for JWT token generation
-   
+   SENDER_EMAIL = Use a gmail address as the sender email
+   SENDER_PASSWORD = create an app password for the gmail id and use here
    ```
 
 ## Running the Application
@@ -67,15 +68,13 @@ This guide outlines the steps required to run the Flask application that uses Mo
    python main.py
    ```
 
-3. Open a web browser and navigate to `http://localhost:5000` to access the application.
+3. Open a web browser and navigate to `http://localhost:5000/healthcheck` to access the application.
+4.  API Documentation is available at `http://localhost:5000/swagger/`
 
 ## Usage
 
 - Use the application according to its functionality. Ensure that MongoDB is accessible and properly configured to interact with the application.
 
-## Contributing
-
-- Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue or submit a pull request.
 
 ## License
 
