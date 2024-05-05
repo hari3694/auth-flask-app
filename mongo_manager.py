@@ -23,3 +23,10 @@ class MongoManager:
         if id:
             return True
         return False
+
+    def update_one(self, collection, condition, data):
+        print(data, "============")
+        result = self.db[collection].update_one(condition, {'$set': data})
+        if result.modified_count > 0:
+            return True
+        return False
