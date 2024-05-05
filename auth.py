@@ -30,6 +30,7 @@ def login():
             if customer:
                 if 'password' in customer:
                     if 'password' not in body:
+                        logger.error("Client error: 'Missing email or password'")
                         return jsonify({'message': 'Missing email or password'}), 400
                     else:
                         if customer['password'] == body['password']:
@@ -38,14 +39,18 @@ def login():
                                                key=SECRET_KEY, algorithm="HS256")
                             return jsonify({'token': token}), 200
                 else:
-                    password_reset(customer, domain)
-                    return jsonify({'message': f'Link to reset the password have been sent to {email}'}), 400
+                    reset = password_reset(customer, domain)
+                    if reset:
+                        return jsonify({'message': f'Link to reset the password have been sent to {email}'}), 400
+                    return 500
             else:
+                logger.error("Server error: User not found")
                 return jsonify({'message': 'User not found'}), 404
         else:
+            logger.error("Client error: 'Missing email or password'")
             return jsonify({'message': 'Missing email or password'}), 400
     except Exception as E:
-        logger.exception(str(E))
+        logger.exception("Server error: " + str(E))
         return 500
 
 
@@ -59,10 +64,14 @@ def forgot_password():
             customer = mongo.find_one(customer_collection, {'email': email})
             if customer:
                 reset = password_reset(customer, domain)
-            return jsonify({'message': f'Link to reset the password have been sent to {email}'}), 400
+                if reset:
+                    return jsonify({'message': f'Link to reset the password have been sent to {email}'}), 400
+                else:
+                    return 500
+        logger.error("Client error: 'Missing email'")
         return jsonify({'message': 'Missing email'}), 400
     except Exception as E:
-        logger.exception(str(E))
+        logger.exception("Server error: " + str(E))
         return 500
 
 
@@ -79,8 +88,10 @@ def reset_password():
                 mongo.update_one(customer_collection, {'email': email}, {'password': new_password})
                 return jsonify({'message': 'Password reset successful'})
             else:
+                logger.error("Client error: Token expired")
                 return jsonify({'error': 'Token has expired'}), 400
         else:
+            logger.error("Client error: Invalid Token")
             return jsonify({'error': 'Invalid token'}), 400
     except Exception as E:
         logger.exception(str(E))
@@ -93,17 +104,15 @@ def change_language(email):
     # Get the new language from the request
     new_language = request.json.get('language')
     if new_language:
-        # Check if the language is valid
         if new_language not in ['de', 'en']:
+            logger.error("Client error: Invalid language")
             return jsonify({'message': 'Invalid language'}), 400
-
-        # Update the user's language in the database
         result = mongo.update_one(customer_collection, {'email': email}, {'language': new_language})
-
-        # Check if the update was successful
         if result:
             return jsonify({'message': 'Language updated successfully'}), 200
         else:
+            logger.error("Client error: Invalid Request")
             return jsonify({'message': 'Invaild request'}), 400
     else:
+        logger.error("Client error: language to update missing'")
         return jsonify({'message': 'language to update missing'}), 400

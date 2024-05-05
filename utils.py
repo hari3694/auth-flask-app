@@ -13,7 +13,6 @@ reset_token_collection = os.getenv('RESET_TOKEN_COLLECTION')
 
 def password_reset(customer, domain):
     try:
-        print(customer['email'], "=================")
         token = generate_token(customer['email'])
         reset_link = f"{domain}/api/v1/reset-password?token={token}"
 
@@ -22,7 +21,7 @@ def password_reset(customer, domain):
         send.send_email(receiver_email=customer['email'], subject=subject, body=body)
         return True
     except Exception as e:
-        logger.exception(str(e))
+        logger.exception("Server error: " + str(e))
         return False
 
 
