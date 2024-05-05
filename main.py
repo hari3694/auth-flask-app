@@ -4,8 +4,8 @@ from auth import auth_blueprint
 app = Flask(__name__)
 
 
-AUTH_NOT_REQUIRED_ENDPOINTS = ['/api/v1/login', '/api/v1/forgot-password', '/api/v1/reset-password']
-NON_MIN_VERSION_ENDPOINTS = ['/api/v1/reset-password']
+AUTH_NOT_REQUIRED_ENDPOINTS = ['/api/v1/login', '/api/v1/forgot-password', '/api/v1/reset-password', '/healthcheck']
+NON_MIN_VERSION_ENDPOINTS = ['/api/v1/reset-password', '/healthcheck']
 MIN_VERSION = '2.1.0'
 
 @app.before_request
